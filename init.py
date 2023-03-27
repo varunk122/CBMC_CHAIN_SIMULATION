@@ -1,14 +1,4 @@
-import math
 import numpy as np
-import matplotlib.pyplot as plt
-
-#parameters
-
-rho = 0.01
-Npart = 100
-
-box_length = (Npart / rho) ** (1/3)
-
 
 def generate_random_molecule(bond_length, box_length):
     r1 = np.zeros(3)
@@ -24,7 +14,7 @@ def generate_random_molecule(bond_length, box_length):
     return r1, r2
 
 def check_overlap(mol_pos, positions,box_length):
-    threshold  = 0.01
+    threshold  = 1.2
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
@@ -33,14 +23,6 @@ def check_overlap(mol_pos, positions,box_length):
     return False
 
 
-def visualize(positions):
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    for pos in positions:
-        ax.plot([pos[0][0],pos[1][0]],[pos[0][1],pos[1][1]],
-        [pos[1][2],pos[1][2]])
-    
-    plt.show()
 
 def init_system(box_length, Npart):
 
@@ -64,8 +46,8 @@ def init_system(box_length, Npart):
     return positions
 
 
-positions = init_system(box_length, Npart)
-print(box_length)
-visualize(positions)
+# positions = init_system(box_length, Npart)
+# print(box_length)
+# visualize(positions)
 
 
