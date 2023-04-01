@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import math
 
 #parameters 
 
@@ -10,7 +11,7 @@ eps = 0.466 # e/KbT
 def pbc(x, L):
     # pbc checks for periodic image and returns nearest image
     if x >= (0.5*L):
-        dist = L - x
+        dist = math.ceil(x/L)*L - x
     elif x < (-0.5*L):
         dist = x + L
     else:
@@ -19,15 +20,24 @@ def pbc(x, L):
 
 def lj_potential(r,box_length):
     r = pbc(r,box_length)
+    # print(r)
     fr6 = sigma / np.power(r,6)
     return 4*eps*(fr6*(fr6-1))
+
+def find_potential_between_alkanes(mol_pos1, mol_pos2,box_length):
+    energy = 0
+    for atom_pos_1 in mol_pos1:
+        for atom_pos_2 in mol_pos2:
+            r = np.linalg.norm(atom_pos_1 - atom_pos_2)
+            energy += lj_potential(r,box_length)
+    
+    return energy
 
 def total_energy(positions,box_length):
     energy = 0
     for i in range(len(positions)):
         for j in range(i+1, len(positions)):
-            r =  np.linalg.norm(positions[j] - positions[i])
-            energy += lj_potential(r,box_length)
+            energy += find_potential_between_alkanes(positions[i], positions[j],box_length)
 
     return energy
 

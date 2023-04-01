@@ -1,4 +1,5 @@
 import numpy as np
+import utility
 
 def generate_random_molecule(bond_length, box_length):
     r1 = np.zeros(3)
@@ -14,11 +15,11 @@ def generate_random_molecule(bond_length, box_length):
     return r1, r2
 
 def check_overlap(mol_pos, positions,box_length):
-    threshold  = 1.2
+    threshold  = 1.5
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
-            if np.linalg.norm(atom_pos - mol_pos[0]) <threshold or np.linalg.norm(atom_pos - mol_pos[1]) < threshold:
+            if utility.pbc(np.linalg.norm(atom_pos - mol_pos[0]),box_length) <threshold or utility.pbc(np.linalg.norm(atom_pos - mol_pos[1]),box_length) < threshold:
                 return True
     return False
 
@@ -28,7 +29,7 @@ def init_system(box_length, Npart):
 
     positions = []
     for i in range(Npart):
-        max_iter = 100
+        max_iter = 1000
         it = 0
         while it < max_iter:
             r1,r2 = generate_random_molecule(1, box_length)

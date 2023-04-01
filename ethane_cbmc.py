@@ -8,13 +8,15 @@ import numpy as np
 rho = 0.01
 Npart = 108
 box_length = (Npart / rho) ** (1/3)
+# print(box_length)
 bond_length = 2.353  #angstrom
 
-k = 10
+k = 30
 temp = 300 #kelvin
 beta = 1
 
-debug = False
+debug = True
+accepted_steps = 0
 
 positions = init.init_system(box_length, Npart)
 
@@ -27,9 +29,10 @@ def check(positions):
 
 def CBMC_step(positions, Npart):
     #select a random_chain
+    global accepted_steps
     idx = random.randint(0,Npart-1)
     #find rosenbluth factor for previous configuration
-    prev_position = positions[idx]
+    prev_position = np.copy(positions[idx])
     Wo1 = k * np.exp(-beta * utility.energy_of_particle(idx,0,positions,box_length))
     Wo2 = np.exp(-beta * utility.energy_of_particle(idx,1,positions,box_length))
     for i in range(k-1):
@@ -59,7 +62,7 @@ def CBMC_step(positions, Npart):
     while cum_Wn2 < r_Wn2_sum:
         i +=1
         cum_Wn2 += Wn2[i]
-    positions
+    print(i, Wn2[i])
     Wn = Wn1 * Wn2_sum
     #replace position of second atom with selected second atom configuration 
     positions[idx][1] = second_atom_pos[i]
@@ -67,16 +70,24 @@ def CBMC_step(positions, Npart):
     if Wn < Wo and random.random() > Wn/Wo:
         #not accept
         positions[idx] = prev_position   
-        if debug :
-            print("new move accepted")
+        # if debug :
+            # print("new move not accepted")
+    else :
+        accepted_steps += 1
+        print("new move accepted")
     
     return 
 
-for i in range(10):
-    visualize.visualize(positions)
-    total_energy = 0
-    for i in range(Npart):
-        for j in range(2):
-            total_energy = utility.energy_of_particle(i,j,positions,box_length)
-    print(total_energy)
+total_energy_sum = 0
+
+for i in range(100):
+    # visualize.visualize(positions)
+    energy = utility.total_energy(positions,box_length)
+    print(energy)
+    total_energy_sum += energy
     CBMC_step(positions,Npart)
+
+
+print(f"avg_energy {total_energy_sum / 100}")
+print(f"Acceptance percentage {accepted_steps/1}")
+visualize.visualize(positions)
