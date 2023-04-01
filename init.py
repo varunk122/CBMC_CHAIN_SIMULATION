@@ -47,8 +47,3 @@ def init_system(box_length, Npart):
     return positions
 
 
-# positions = init_system(box_length, Npart)
-# print(box_length)
-# visualize(positions)
-
-

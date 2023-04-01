@@ -3,22 +3,13 @@ import utility
 import visualize
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
-#parameters
-rho = 0.01
-Npart = 108
-box_length = (Npart / rho) ** (1/3)
-# print(box_length)
-bond_length = 2.353  #angstrom
+#import parameters
+from config import *
 
-k = 30
-temp = 300 #kelvin
-beta = 1
-
-debug = True
+debug = False
 accepted_steps = 0
-
-positions = init.init_system(box_length, Npart)
 
 def CBMC_step(positions, Npart):
     #select a random_chain
@@ -58,27 +49,34 @@ def CBMC_step(positions, Npart):
     Wn = Wn1 * Wn2_sum
     #replace position of second atom with selected second atom configuration 
     positions[idx][1] = second_atom_pos[i]
-    # print(Wo, " ", Wn)
     if Wn < Wo and random.random() > Wn/Wo:
         #not accept
         positions[idx] = prev_position   
+        print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move not accpeted !! ")
     else :
         accepted_steps += 1
-        if debug:
-            print("new move accepted")
+        print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
 
     return positions
 
-total_energy_sum = 0
+# total_energy_sum = 0
+# energy_list = []
+# steps = []
+# for i in range(nsteps):
+#     # visualize.visualize(positions)
+#     energy = utility.total_energy(positions,box_length)
+#     print(f"Energy of the system is: {energy} ")
+#     total_energy_sum += energy
+#     energy_list.append(energy)
+#     steps.append(i)
+#     print(i)
+#     positions = CBMC_step(positions,Npart)
 
-for i in range(1000):
-    # visualize.visualize(positions)
-    energy = utility.total_energy(positions,box_length)
-    print(energy)
-    total_energy_sum += energy
-    positions = CBMC_step(positions,Npart)
 
-
-print(f"avg_energy {total_energy_sum / 100}")
-print(f"Acceptance percentage {accepted_steps/1}")
-visualize.visualize(positions)
+# print(f"avg_energy {total_energy_sum / nsteps}")
+# print(f"Acceptance percentage {accepted_steps*100/nsteps}")
+# # visualize.visualize(positions)
+# plt.plot(steps,energy_list)
+# plt.xlabel(steps)
+# plt.ylabel(energy)
+# plt.show()

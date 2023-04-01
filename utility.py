@@ -82,17 +82,17 @@ def check(positions, bond_length):
     return True
 
 
-# def add_bond(mol_pos, theta_mean, k):
-#     r = abs(mol_pos[-2] - mol_pos[-1])
-#     r = r / np.linalg.norm(r)
-#     r_new = generate_random_unit_vector()
-#     theta = np.arccos(np.dot(r,r_new))
+def add_bond(mol_pos, theta_mean, k, beta = 1):
+    r = abs(mol_pos[-2] - mol_pos[-1])
+    r = r / np.linalg.norm(r)
+    r_new = generate_random_unit_vector()
+    theta = np.arccos(np.dot(r,r_new))
 
-#     energy = 0.5*k*(theta- theta_mean)^2
+    energy = 0.5*k*(theta- theta_mean)^2
     
-#     if random.random() < np.exp(-beta*energy):
-#         r_new  = r_new + mol_pos[-1]
-#         return r_new
+    if random.random() < np.exp(-beta*energy):
+        r_new  = r_new + mol_pos[-1]
+        return r_new
     
-#     return add_bond(mol_pos,theta_mean,k)
+    return add_bond(mol_pos,theta_mean,k)
     
