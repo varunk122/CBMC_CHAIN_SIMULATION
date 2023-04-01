@@ -20,13 +20,6 @@ accepted_steps = 0
 
 positions = init.init_system(box_length, Npart)
 
-def check(positions):
-    for pos in positions:
-        if np.linalg.norm(pos[0] - pos[1]) > bond_length + 0.01:
-            return False
-    
-    return True
-
 def CBMC_step(positions, Npart):
     #select a random_chain
     global accepted_steps
@@ -50,7 +43,7 @@ def CBMC_step(positions, Npart):
     for i in range(k):
         r = utility.generate_random_unit_vector()* bond_length
         positions[idx][1] = positions[idx][0] + r
-        second_atom_pos.append(positions[idx][1])
+        second_atom_pos.append(positions[idx][1].copy())
         Wn2.append(np.exp(-beta * utility.energy_of_particle(idx,1,positions,box_length)))
 
     Wn2_sum = sum(Wn2)
@@ -62,30 +55,28 @@ def CBMC_step(positions, Npart):
     while cum_Wn2 < r_Wn2_sum:
         i +=1
         cum_Wn2 += Wn2[i]
-    print(i, Wn2[i])
     Wn = Wn1 * Wn2_sum
     #replace position of second atom with selected second atom configuration 
     positions[idx][1] = second_atom_pos[i]
-    print(Wo, " ", Wn)
+    # print(Wo, " ", Wn)
     if Wn < Wo and random.random() > Wn/Wo:
         #not accept
         positions[idx] = prev_position   
-        # if debug :
-            # print("new move not accepted")
     else :
         accepted_steps += 1
-        print("new move accepted")
-    
-    return 
+        if debug:
+            print("new move accepted")
+
+    return positions
 
 total_energy_sum = 0
 
-for i in range(100):
+for i in range(1000):
     # visualize.visualize(positions)
     energy = utility.total_energy(positions,box_length)
     print(energy)
     total_energy_sum += energy
-    CBMC_step(positions,Npart)
+    positions = CBMC_step(positions,Npart)
 
 
 print(f"avg_energy {total_energy_sum / 100}")

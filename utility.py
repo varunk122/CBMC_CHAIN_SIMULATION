@@ -10,13 +10,15 @@ eps = 0.466 # e/KbT
 
 def pbc(x, L):
     # pbc checks for periodic image and returns nearest image
+    # x is magnitude of distance between two atoms
+    # L is box_length
+
+    x = x - math.floor(x/L)* L
+
     if x >= (0.5*L):
-        dist = math.ceil(x/L)*L - x
-    elif x < (-0.5*L):
-        dist = x + L
-    else:
-        dist = x
-    return dist
+        return L - x 
+    
+    return x
 
 def lj_potential(r,box_length):
     r = pbc(r,box_length)
@@ -62,6 +64,22 @@ def generate_random_unit_vector():
     r = r * scale
 
     return r
+
+def get_minimum_distance(positions, idx1, idx2, box_length):
+    min_len = 1000
+    for i in range(len(positions)):
+        if idx1 !=i:
+            for pos in positions[i]:
+                min_len = min(min_len, pbc(np.linalg.norm(pos - positions[idx1][idx2]),box_length))
+    
+    return min_len
+
+def check(positions, bond_length):
+    for pos in positions:
+        if np.linalg.norm(pos[0] - pos[1]) > bond_length + 0.01:
+            return False
+    
+    return True
 
 
 # def add_bond(mol_pos, theta_mean, k):
