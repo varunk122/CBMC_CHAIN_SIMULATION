@@ -6,30 +6,31 @@ import math
 from config import *
 
 
-def pbc(x, L):
+def pbc(dx, L):
     # pbc checks for periodic image and returns nearest image
     # x is magnitude of distance between two atoms
     # L is box_length
-
-    x = x - math.floor(x/L)* L
-
-    if x >= (0.5*L):
-        return L - x 
+    if dx > L/2:
+        dx -= L
+    if dx < -L/2:
+        dx += L
     
-    return x
+    return dx
 
-def lj_potential(r,box_length):
-    r = pbc(r,box_length)
+def lj_potential(atom_pos1, atom_pos2,box_length):
+    dx, dy, dz  = atom_pos1 - atom_pos2
+    dx, dy, dz = pbc(dx,box_length) , pbc(dy,box_length) , pbc(dz,box_length)
+    r = dx*dx + dy*dy + dz * dz
     # print(r)
-    fr6 = sigma / np.power(r,6)
+    print(np.sqrt(r))
+    fr6 = np.power(sigma**2 / r,3)
     return 4*eps*(fr6*(fr6-1))
 
 def find_potential_between_alkanes(mol_pos1, mol_pos2,box_length):
     energy = 0
     for atom_pos_1 in mol_pos1:
         for atom_pos_2 in mol_pos2:
-            r = np.linalg.norm(atom_pos_1 - atom_pos_2)
-            energy += lj_potential(r,box_length)
+            energy += lj_potential(atom_pos_1, atom_pos_2,box_length)
     
     return energy
 
