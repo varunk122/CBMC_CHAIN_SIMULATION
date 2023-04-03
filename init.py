@@ -1,5 +1,5 @@
 import numpy as np
-import utility
+from utility import pbc
 
 from config import *
 
@@ -22,7 +22,15 @@ def check_overlap(mol_pos, positions):
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
-            if utility.pbc(np.linalg.norm(atom_pos - mol_pos[0]),box_length) <threshold or utility.pbc(np.linalg.norm(atom_pos - mol_pos[1]),box_length) < threshold:
+
+            dx, dy, dz  = atom_pos - mol_pos[0]
+            dx, dy, dz = pbc(dx,box_length) , pbc(dy,box_length) , pbc(dz,box_length)
+            r1 = np.sqrt(dx*dx+dy*dy+dz*dz)
+            dx, dy, dz  = atom_pos - mol_pos[1]
+            dx, dy, dz = pbc(dx,box_length) , pbc(dy,box_length) , pbc(dz,box_length)
+            r2 = np.sqrt(dx*dx+dy*dy+dz*dz)
+
+            if r1 <threshold or r2 < threshold:
                 return True
     return False
 

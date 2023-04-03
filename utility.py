@@ -22,7 +22,7 @@ def lj_potential(atom_pos1, atom_pos2,box_length):
     dx, dy, dz = pbc(dx,box_length) , pbc(dy,box_length) , pbc(dz,box_length)
     r = dx*dx + dy*dy + dz * dz
     # print(r)
-    print(np.sqrt(r))
+    #print(np.sqrt(r))
     fr6 = np.power(sigma**2 / r,3)
     return 4*eps*(fr6*(fr6-1))
 
@@ -47,8 +47,8 @@ def energy_of_particle(idx1, idx2, positions,box_length):
     for i in range(len(positions)):
         if i != idx1:
             for atom_pos in positions[i]:
-                r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
-                energy += lj_potential(r,box_length)
+                # r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
+                energy += lj_potential(positions[idx1][idx2], atom_pos, box_length)
 
     return energy
 
@@ -112,4 +112,24 @@ def read_positions_from_gromacs_file(file_name):
             positions.append([mol_pos_1,mol_pos_2])
 
     return positions
+
+def output_energy(s, PE,file):
+    with open(file, 'a+') as f:
+        f.write("%9d %8.3f" %(s, PE))
+        f.write('\n')
+
+def output_xyz(N,box_length,r,p,file):
+    """xyz output"""
+    with open(file, 'a+') as f:
+        f.write('step=%5d\n'%(p))
+        f.write("%5i"%(2*N))
+        f.write('\n')
+        for i in range(N):
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C1',2*i+1, r[i][0][0], r[i][0][1], r[i][0][2]))
+            f.write('\n')
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C2',2*i+2, r[i][1][0], r[i][1][1], r[i][1][2]))
+            
+            f.write('\n')
+        f.write("%10.5f%10.5f%10.5f"%(box_length,box_length,box_length))
+        f.write('\n')
     

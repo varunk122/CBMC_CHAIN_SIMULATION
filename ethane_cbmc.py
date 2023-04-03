@@ -53,9 +53,9 @@ def CBMC_step(positions, Npart):
     if Wn < Wo and random.random() > Wn/Wo:
         #not accept
         positions[idx] = prev_position   
-        print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move not accpeted !! ")
+        # print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move not accpeted !! ")
     else :
         accepted_steps += 1
-        print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
+        # print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
 
     return positions
