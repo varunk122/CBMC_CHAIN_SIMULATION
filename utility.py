@@ -48,12 +48,7 @@ def energy_of_particle(idx1, idx2, positions,box_length):
             for atom_pos in positions[i]:
                 r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
                 energy += lj_potential(r,box_length)
-    
-    # for i in range(idx2):
-    #     r = np.linalg.norm(positions[idx1][i] - positions[idx1][idx2])
-    #     energy += lj_potential(r,box_length)
 
-    # print(energy)
     return energy
 
 def generate_random_unit_vector():
@@ -102,4 +97,18 @@ def read_positions_from_file(file_name):
     
     return positions
 
+# def print_bond_length_of_mol(positions):
+
+def read_positions_from_gromacs_file(file_name):
+    with open(file_name,'r') as f:
+        lines = [line for line in f]
+        positions = []
+        for i in range(Npart):
+            l1 = lines[2*i+2].split()
+            l2 = lines[2*i+3].split()
+            mol_pos_1 = np.array([l1[3],l1[4],l1[5]]).astype(float)
+            mol_pos_2 = np.array([l2[3],l2[4],l2[5]]).astype(float)
+            positions.append([mol_pos_1,mol_pos_2])
+
+    return positions
     

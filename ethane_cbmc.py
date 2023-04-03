@@ -11,7 +11,6 @@ from config import *
 debug = False
 accepted_steps = 0
 
-positions = init.init_system(box_length, Npart)
 
 def CBMC_step(positions, Npart):
     #select a random_chain

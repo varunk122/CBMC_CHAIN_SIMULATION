@@ -9,7 +9,7 @@ k = 30         #number of trial orientations
 temp = 300 #kelvin     #temperature of the system
 beta = 1               #value of beta / KbT
 
-sigma = 3.75  #for LJ potential
-eps = 1.17   # e/KbT #for LJ Potentail
+sigma = 0.375   #for LJ potential
+eps = 0.46   # e/KbT #for LJ Potential
 
-nsteps = 100000        #total number of simulation steps
+nsteps = 10        #total number of simulation steps
