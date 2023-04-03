@@ -11,6 +11,8 @@ from config import *
 debug = False
 accepted_steps = 0
 
+positions = init.init_system(box_length, Npart)
+
 def CBMC_step(positions, Npart):
     #select a random_chain
     global accepted_steps
@@ -58,25 +60,3 @@ def CBMC_step(positions, Npart):
         print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
 
     return positions
-
-# total_energy_sum = 0
-# energy_list = []
-# steps = []
-# for i in range(nsteps):
-#     # visualize.visualize(positions)
-#     energy = utility.total_energy(positions,box_length)
-#     print(f"Energy of the system is: {energy} ")
-#     total_energy_sum += energy
-#     energy_list.append(energy)
-#     steps.append(i)
-#     print(i)
-#     positions = CBMC_step(positions,Npart)
-
-
-# print(f"avg_energy {total_energy_sum / nsteps}")
-# print(f"Acceptance percentage {accepted_steps*100/nsteps}")
-# # visualize.visualize(positions)
-# plt.plot(steps,energy_list)
-# plt.xlabel(steps)
-# plt.ylabel(energy)
-# plt.show()

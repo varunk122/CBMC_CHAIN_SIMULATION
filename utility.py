@@ -2,10 +2,8 @@ import numpy as np
 import random
 import math
 
-#parameters 
-
-sigma = 1
-eps = 0.466 # e/KbT
+#parameters
+from config import *
 
 
 def pbc(x, L):
@@ -95,4 +93,13 @@ def add_bond(mol_pos, theta_mean, k, beta = 1):
         return r_new
     
     return add_bond(mol_pos,theta_mean,k)
+
+def read_positions_from_file(file_name):
+    np_positions = np.load(file_name, allow_pickle=True)
+    positions = []
+    for mol_pos in np_positions:
+        positions.append([mol_pos[0],mol_pos[1]])
+    
+    return positions
+
     

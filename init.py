@@ -1,7 +1,9 @@
 import numpy as np
 import utility
 
-def generate_random_molecule(bond_length, box_length):
+from config import *
+
+def generate_random_molecule(bond_length ):
     r1 = np.zeros(3)
     r2 = np.random.rand(3)
     scale = bond_length / np.linalg.norm(r2)
@@ -14,8 +16,9 @@ def generate_random_molecule(bond_length, box_length):
     r2 += r
     return r1, r2
 
-def check_overlap(mol_pos, positions,box_length):
-    threshold  = 1.5
+# def generate_random_propane_molecule(bond_length)
+def check_overlap(mol_pos, positions):
+    threshold  = 2
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
@@ -32,9 +35,9 @@ def init_system(box_length, Npart):
         max_iter = 1000
         it = 0
         while it < max_iter:
-            r1,r2 = generate_random_molecule(1, box_length)
+            r1,r2 = generate_random_molecule(bond_length)
             mol_pos = [r1,r2]
-            if check_overlap(mol_pos, positions, box_length) == True:
+            if check_overlap(mol_pos, positions) == True:
                 it += 1
             else :
                 positions.append(mol_pos)
