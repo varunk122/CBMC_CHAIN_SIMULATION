@@ -100,7 +100,7 @@ def read_positions_from_file(file_name):
 
 # def print_bond_length_of_mol(positions):
 
-def read_positions_from_gromacs_file(file_name):
+def read_positions_from_gromacs_file(file_name,Npart):
     with open(file_name,'r') as f:
         lines = [line for line in f]
         positions = []

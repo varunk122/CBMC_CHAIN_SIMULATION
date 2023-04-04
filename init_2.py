@@ -1,25 +1,16 @@
 import numpy as np
-
- utility import pbc
-
+from utility import pbc
 from config import *
 
-def generate_random_molecule(bond_length ):
-    r1 = np.zeros(3)
-    r2 = np.random.rand(3)
-    scale = bond_length / np.linalg.norm(r2)
-    r2 = r2 * scale
+def generate_random_molecule(init_pos,box_length):
+    r = np.random.rand(3)* box_length #generating random point for center of mass
+    scale=abs(r)
+    #print(scale)
+    #init_pos
+    return init_pos-scale
 
-    #translate
-
-    r = np.random.rand(3)* box_length
-    r1 += r
-    r2 += r
-    return r1, r2
-
-# def generate_random_propane_molecule(bond_length)
 def check_overlap(mol_pos, positions):
-    threshold  = 2
+    threshold  = 0.3
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
@@ -35,27 +26,27 @@ def check_overlap(mol_pos, positions):
                 return True
     return False
 
-
-
-def init_system(box_length, Npart):
+def init_system(init_pos,box_length, Npart):
 
     positions = []
     for i in range(Npart):
         max_iter = 1000
         it = 0
         while it < max_iter:
-            r1,r2 = generate_random_molecule(bond_length)
+            r1,r2 = generate_random_molecule(init_pos,box_length)
+            #print(r1)
             mol_pos = [r1,r2]
             if check_overlap(mol_pos, positions) == True:
                 it += 1
             else :
                 positions.append(mol_pos)
+                #print(mol_pos)
                 break
         
         if it == max_iter:
             break
-
-
-    return positions
+    box_center=np.array([box_length/2,box_length/2,box_length/2])
+    center=np.mean(np.mean(positions,axis=0),axis=0)
+    return positions-center+box_center # translate to middle of box
 
 

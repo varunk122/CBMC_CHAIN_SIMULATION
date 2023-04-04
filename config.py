@@ -12,4 +12,4 @@ beta = 1               #value of beta / KbT
 sigma = 0.375   #for LJ potential
 eps = 0.46   # e/KbT #for LJ Potential
 
-nsteps = 1000  #total number of simulation steps
+nsteps = 10000  #total number of simulation steps
