@@ -14,6 +14,17 @@ def visualize(positions):
         ax.scatter3D([pos[1][0]],[pos[1][1]], [pos[1][2]], color = 'blue')
     plt.show()
 
+def visualize_propane(positions):
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    for pos in positions:
+        ax.plot([pos[0][0],pos[1][0],pos[2][0]],[pos[0][1],pos[1][1],pos[2][1]],
+        [pos[0][2],pos[1][2],pos[2][2]], 'g')
+        ax.scatter3D([pos[0][0]],[pos[0][1]], [pos[0][2]], color = 'red')
+        ax.scatter3D([pos[1][0]],[pos[1][1]], [pos[1][2]], color = 'blue')
+        ax.scatter3D([pos[2][0]],[pos[2][1]], [pos[2][2]], color = 'yellow')
+    plt.show()
+
 def plot_energy_from_file(file_name):
     with open(file_name,'r') as f:
         energy = [float(line.strip()) for line in f]
