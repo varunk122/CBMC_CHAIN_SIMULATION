@@ -49,7 +49,8 @@ def energy_of_particle(idx1, idx2, positions,box_length):
             for atom_pos in positions[i]:
                 # r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
                 energy += lj_potential(positions[idx1][idx2], atom_pos, box_length)
-
+    if idx2 == 2:
+        energy += lj_potential(positions[idx1][0],positions[idx1][2],box_length)
     return energy
 
 def generate_random_unit_vector():
@@ -76,19 +77,23 @@ def check(positions, bond_length):
     return True
 
 
-def add_bond(mol_pos, theta_mean, k, beta = 1):
-    r = abs(mol_pos[-2] - mol_pos[-1])
+def add_bond(mol_pos, beta = 1):
+    r = mol_pos[-2] - mol_pos[-1]
     r = r / np.linalg.norm(r)
-    r_new = generate_random_unit_vector()
-    theta = np.arccos(np.dot(r,r_new))
+    flag = False
+    while flag == False:
+        r_new = generate_random_unit_vector()
+        theta = np.arccos(np.dot(r,r_new))
 
-    energy = 0.5*k*(theta- theta_mean)^2
+        energy = 0.5*k_prop*(theta- theta_mean)**2
+        # print(theta)
+        # print(energy)
+        
+        if random.random() < np.exp(-beta*energy):
+            r_new  = r_new *  bond_length + mol_pos[-1]
+            flag = True
+            return r_new
     
-    if random.random() < np.exp(-beta*energy):
-        r_new  = r_new + mol_pos[-1]
-        return r_new
-    
-    return add_bond(mol_pos,theta_mean,k)
 
 def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)
@@ -122,13 +127,14 @@ def output_xyz(N,box_length,r,p,file):
     """xyz output"""
     with open(file, 'a+') as f:
         f.write('step=%5d\n'%(p))
-        f.write("%5i"%(2*N))
+        f.write("%5i"%(3*N))
         f.write('\n')
         for i in range(N):
             f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C1',2*i+1, r[i][0][0], r[i][0][1], r[i][0][2]))
             f.write('\n')
             f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C2',2*i+2, r[i][1][0], r[i][1][1], r[i][1][2]))
-            
+            f.write('\n')
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C3',2*i+3, r[i][2][0], r[i][2][1], r[i][2][2]))
             f.write('\n')
         f.write("%10.5f%10.5f%10.5f"%(box_length,box_length,box_length))
         f.write('\n')
