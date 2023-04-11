@@ -1,6 +1,6 @@
 import numpy as np
 
-from utility import pbc,add_bond
+from utility import pbc,add_bond_optimal
 
 from config import *
 
@@ -19,7 +19,7 @@ def generate_random_molecule(bond_length ):
 
 def generate_propane_molecule(bond_length):
     mol_pos = generate_random_molecule(bond_length)
-    r3 = add_bond(mol_pos)
+    r3 = add_bond_optimal(mol_pos)
     mol_pos.append(r3)
     return mol_pos
 
@@ -63,6 +63,7 @@ def init_system(box_length, Npart):
         if it == max_iter:
             break
 
+    assert len(positions) == Npart, f"Only {len(positions)} partcles are inserted instead of {Npart}"
 
     return positions
 

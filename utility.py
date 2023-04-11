@@ -93,7 +93,33 @@ def add_bond(mol_pos, beta = 1):
             r_new  = r_new *  bond_length + mol_pos[-1]
             flag = True
             return r_new
-    
+
+def convert_to_unit_vector(vector):
+    return vector / np.linalg.norm(vector)
+
+def add_bond_optimal(mol_pos, beta = 1):
+    z = mol_pos[-2] - mol_pos[-1]
+    y = np.array([0,1,0]) 
+    if z[1] != 0:
+        y = np.array([1,-(z[0]+z[2])/z[1],1])
+
+    x = np.cross(y,z)
+
+    #convert to unit vectors
+    z = convert_to_unit_vector(z)
+    y = convert_to_unit_vector(y)
+    x = convert_to_unit_vector(x)
+
+    #adding bond in spherical coordintate system for ease 
+
+    r = bond_length
+    theta = theta_mean
+    phi = random.random() * (2*np.pi)
+
+    #converting this back to cartesian coordintates
+
+    return mol_pos[-1] + (r*np.sin(theta)*np.cos(phi))*x + (r*np.sin(theta)*np.sin(phi))*y + (r*np.cos(theta))*z
+
 
 def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)

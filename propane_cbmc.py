@@ -29,7 +29,7 @@ def CBMC_step(positions, Npart):
     Wo3 = np.exp(-beta * utility.energy_of_particle(idx,2,positions,box_length))
     for i in range(k-1):
         mol_pos = [prev_position[0], prev_position[1]]
-        r3 = utility.add_bond(mol_pos)
+        r3 = utility.add_bond_optimal(mol_pos)
         positions[idx][2] = r3
         Wo3 += np.exp(-beta*utility.energy_of_particle(idx,2,positions,box_length))
     positions[idx][2] = prev_position[2]
@@ -64,7 +64,7 @@ def CBMC_step(positions, Npart):
     Wn3 = []
     for i in range(k):
         mol_pos = [positions[idx][0],positions[idx][1]]
-        r3 = utility.add_bond(mol_pos)
+        r3 = utility.add_bond_optimal(mol_pos)
         positions[idx][2] = r3.copy()
         third_atom_pos.append(r3.copy())
         Wn3.append(np.exp(-beta*utility.energy_of_particle(idx,2,positions,box_length)))
