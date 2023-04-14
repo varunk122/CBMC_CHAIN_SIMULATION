@@ -50,9 +50,13 @@ def init_system(box_length, Npart):
         max_iter = 1000
         it = 0
         while it < max_iter:
-            mol_pos = generate_random_molecule(bond_length)
-            # mol_pos = generate_propane_molecule(bond_length)
-            # mol_pos = [r1,r2]
+            if molecule_type == 'ethane':
+                mol_pos = generate_random_molecule(bond_length)
+            elif molecule_type == 'propane':
+                mol_pos = generate_propane_molecule(bond_length)
+            else :
+                print("Error: Unknown molcule_type in config file ")
+                quit()
             if check_overlap(mol_pos, positions) == True:
                 it += 1
             else :

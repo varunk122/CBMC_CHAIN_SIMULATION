@@ -84,6 +84,39 @@ def check(positions, bond_length):
     
     return True
 
+def calculate_pressure(positions):
+    frcut3 = 1/(rcut*rcut*rcut)
+    Vir = 0
+    Vol = box_length**3
+    rho = Npart/Vol
+    Ptail = (16*3.14/3)*rho*rho*( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
+    #print(Ptail)
+    
+    for i in range(Npart-1):                                                ### Loop over all Virial interactions
+        for j in range(i+1, Npart, 1):
+            dx = positions[i][0] - positions[j][0] 
+            dy = positions[i][1] - positions[j][1]
+            dz = positions[i][2] - positions[j][2]
+            xpbc = pbc(dx, box_length)
+            ypbc = pbc(dy, box_length)
+            zpbc = pbc(dz, box_length)
+            r2 = xpbc*xpbc + ypbc*ypbc + zpbc*zpbc
+            
+            if r2 < rcut*rcut:                                              ### Calculating energy for particles inside cutoff distance
+                fr2 = (sigma*sigma)/r2
+                fr6 = fr2*fr2*fr2
+                
+                ##### start your modification here ####
+                Vir = Vir + 48*((fr6*(fr6 - 0.5))) /(3*Vol)
+    
+    
+    ### contribution of Ideal + Virial + Tail correction to pressure
+  
+    Pressure = rho * temp + Vir + Ptail
+                
+    return Pressure
+
+
 
 def add_bond(mol_pos, beta = 1):
     r = mol_pos[-2] - mol_pos[-1]

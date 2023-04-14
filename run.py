@@ -20,7 +20,7 @@ for i in range(nsteps):
     # visualize.visualize(positions)
     energy = utility.total_energy(positions,box_length)
     print(energy)
-    positions = CBMC_step(positions,Npart)
+    positions, _ = CBMC_step(positions,Npart)
     if (i%write_interval==0):
         output_energy(i, energy,file)
         output_xyz(Npart,box_length,positions,i,file_xyz)

@@ -15,7 +15,7 @@ rcut = 3*bond_length #only for calculating pressure
 theta_mean = 1.936 #radian
 k_prop = 212 # KT/rad^2 
 
-nsteps = 10  #total number of simulation steps
+nsteps = 100000  #total number of simulation steps
 
-project_name = "" #name of the project
-molecule_type = "propane" #name of molecule to simulate
+project_name = "chainmc_project" #name of the project
+molecule_type = "ethane" #name of molecule to simulate

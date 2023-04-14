@@ -90,4 +90,4 @@ def CBMC_step(positions, Npart):
         accepted_steps += 1
         print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
 
-    return positions
+    return positions, accepted_steps

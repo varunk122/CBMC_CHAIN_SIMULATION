@@ -17,7 +17,7 @@ for i in range(nsteps):
     # visualize.visualize_propane(positions)
     energy = utility.total_energy(positions,box_length)
     print(f"Energy of the system at step {i} is {energy}")
-    positions = CBMC_step(positions,Npart)
+    positions,_ = CBMC_step(positions,Npart)
     if (i%100==0):
         output_energy(i, energy,file)
         output_xyz(Npart,box_length,positions,i,file_xyz)

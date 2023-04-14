@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Set default values
+config_path=""
+log_path=""
+type=""
+
+# Parse command line arguments
+while getopts ":c:l:t:" opt; do
+  case $opt in
+    c)
+      config_path="$OPTARG"
+      ;;
+    l)
+      log_path="$OPTARG"
+      ;;
+    t)
+      type="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Check if required arguments were provided
+if [ -z "$config_path" ] || [ -z "$log_path" ] || [ -z "$type" ]; then
+  echo "Usage: $0 -c <config_path> -l <log_path> -t <type>"
+  exit 1
+fi
+
+# Convert relative paths to absolute paths
+config_path=$(realpath "$config_path")
+log_path=$(realpath "$log_path")
+
+# Do something with the variables
+echo "Config path: $config_path"
+echo "Log path: $log_path"
+echo "Type: $type"
+
+PATH_CHAINMC=/home/varun/Desktop/CBMC_CHAIN_SIMULATION
+cp $config_path $PATH_CHAINMC
+# Check the type argument and do something
+if [ "$type" == "cbmc" ]; then
+    python3 $PATH_CHAINMC/cbmc_for_chains.py
+elif [ "$type" == "mc" ]; then
+    python3 $PATH_CHAINMC/mc_for_chains.py
+else
+  echo "Error: Command is wrong"
+fi
