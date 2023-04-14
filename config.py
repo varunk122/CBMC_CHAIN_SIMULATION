@@ -15,4 +15,6 @@ eps = 0.46   # e/KbT #for LJ Potential
 theta_mean = 1.936 #radian
 k_prop = 212 # KT/rad^2 
 
-nsteps = 10000  #total number of simulation steps
+nsteps = 100000  #total number of simulation steps
+
+project_name = "run11" #name of the project

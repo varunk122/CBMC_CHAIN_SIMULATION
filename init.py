@@ -1,10 +1,9 @@
 import numpy as np
-
 from utility import pbc,add_bond_optimal
 
 from config import *
 
-def generate_random_molecule(bond_length ):
+def generate_random_molecule(bond_length):
     r1 = np.zeros(3)
     r2 = np.random.rand(3)
     scale = bond_length / np.linalg.norm(r2)
@@ -51,8 +50,8 @@ def init_system(box_length, Npart):
         max_iter = 1000
         it = 0
         while it < max_iter:
-            # mol_pos = generate_random_molecule(bond_length)
-            mol_pos = generate_propane_molecule(bond_length)
+            mol_pos = generate_random_molecule(bond_length)
+            # mol_pos = generate_propane_molecule(bond_length)
             # mol_pos = [r1,r2]
             if check_overlap(mol_pos, positions) == True:
                 it += 1

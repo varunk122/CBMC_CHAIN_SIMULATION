@@ -70,7 +70,7 @@ def CBMC_step(positions, Npart):
         Wn3.append(np.exp(-beta*utility.energy_of_particle(idx,2,positions,box_length)))
 
     Wn3_sum = sum(Wn3)
-    #select a configuration i with probaility Wn3[i]/Wn3_sum
+    #select a configuration i with probability Wn3[i]/Wn3_sum
     cum_Wn3 = Wn3[0]
     r_Wn3_sum = random.random()* Wn3_sum
     i = 0

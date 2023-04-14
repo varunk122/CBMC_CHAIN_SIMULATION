@@ -1,5 +1,6 @@
 from propane_cbmc import *
 from utility import *
+import file_handling as fh
 file="output.out"
 file_xyz="output_xyz.gro"
 out_gro=open(file_xyz,'w')
@@ -20,5 +21,6 @@ for i in range(nsteps):
     if (i%100==0):
         output_energy(i, energy,file)
         output_xyz(Npart,box_length,positions,i,file_xyz)
-out.close()
+        fh.write_positions(positions,i)
 
+out.close()

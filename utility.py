@@ -42,6 +42,14 @@ def total_energy(positions,box_length):
 
     return energy
 
+def energy_of_a_chain(idx, positions, box_length):
+    energy = 0
+    for i in range(len(positions)):
+        if i != idx:
+            energy += find_potential_between_alkanes(positions[idx], positions[i], box_length)
+
+    return energy
+
 def energy_of_particle(idx1, idx2, positions,box_length):
     energy = 0
     for i in range(len(positions)):
@@ -125,7 +133,10 @@ def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)
     positions = []
     for mol_pos in np_positions:
-        positions.append([mol_pos[0],mol_pos[1]])
+        mol_pos_list = []
+        for atom_pos in mol_pos:
+            mol_pos_list.append(atom_pos)
+        positions.append(mol_pos_list)
     
     return positions
 
@@ -156,11 +167,11 @@ def output_xyz(N,box_length,r,p,file):
         f.write("%5i"%(3*N))
         f.write('\n')
         for i in range(N):
-            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C1',2*i+1, r[i][0][0], r[i][0][1], r[i][0][2]))
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C1',3*i+1, r[i][0][0], r[i][0][1], r[i][0][2]))
             f.write('\n')
-            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C2',2*i+2, r[i][1][0], r[i][1][1], r[i][1][2]))
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C2',3*i+2, r[i][1][0], r[i][1][1], r[i][1][2]))
             f.write('\n')
-            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C3',2*i+3, r[i][2][0], r[i][2][1], r[i][2][2]))
+            f.write("%5i%.5s%5s%5i%8.3f%8.3f%8.3f"%(i+1,'ETH','C3',3*i+3, r[i][2][0], r[i][2][1], r[i][2][2]))
             f.write('\n')
         f.write("%10.5f%10.5f%10.5f"%(box_length,box_length,box_length))
         f.write('\n')
