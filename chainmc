@@ -44,6 +44,7 @@ echo "Log path: $log_path"
 echo "Type: $type"
 
 PATH_CHAINMC=/home/varun/Desktop/CBMC_CHAIN_SIMULATION
+
 cp $config_path $PATH_CHAINMC
 # Check the type argument and do something
 if [ "$type" == "cbmc" ]; then

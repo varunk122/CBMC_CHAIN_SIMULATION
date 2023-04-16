@@ -84,6 +84,32 @@ def check(positions, bond_length):
     
     return True
 
+def calculate_pressure_for_monoatomic(atom_pos1, atom_pos2):
+    Vol = box_length**3
+
+    dx = atom_pos1[0] - atom_pos2[0] 
+    dy = atom_pos1[1] - atom_pos2[1]
+    dz = atom_pos1[2] - atom_pos2[2]
+    xpbc = pbc(dx, box_length)
+    ypbc = pbc(dy, box_length)
+    zpbc = pbc(dz, box_length)
+    r2 = xpbc*xpbc + ypbc*ypbc + zpbc*zpbc
+    
+    if r2 < rcut*rcut:                                              ### Calculating energy for particles inside cutoff distance
+        fr2 = (sigma*sigma)/r2
+        fr6 = fr2*fr2*fr2
+        
+        return 48*eps*((fr6*(fr6 - 0.5))) /(3*Vol)
+    
+    return 0
+
+def calculate_pressure_for_chain_molecules(mol_pos1, mol_pos2):
+    vir = 0
+    for ap1 in mol_pos1:
+        for ap2 in mol_pos2:
+            vir += calculate_pressure_for_monoatomic(ap1, ap2)
+    return vir
+
 def calculate_pressure(positions):
     frcut3 = 1/(rcut*rcut*rcut)
     Vir = 0
@@ -91,24 +117,9 @@ def calculate_pressure(positions):
     rho = Npart/Vol
     Ptail = (16*3.14/3)*rho*rho*( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
     #print(Ptail)
-    
-    for i in range(Npart-1):                                                ### Loop over all Virial interactions
-        for j in range(i+1, Npart, 1):
-            dx = positions[i][0] - positions[j][0] 
-            dy = positions[i][1] - positions[j][1]
-            dz = positions[i][2] - positions[j][2]
-            xpbc = pbc(dx, box_length)
-            ypbc = pbc(dy, box_length)
-            zpbc = pbc(dz, box_length)
-            r2 = xpbc*xpbc + ypbc*ypbc + zpbc*zpbc
-            
-            if r2 < rcut*rcut:                                              ### Calculating energy for particles inside cutoff distance
-                fr2 = (sigma*sigma)/r2
-                fr6 = fr2*fr2*fr2
-                
-                ##### start your modification here ####
-                Vir = Vir + 48*((fr6*(fr6 - 0.5))) /(3*Vol)
-    
+    for i in range(Npart):                                                ### Loop over all Virial interactions
+        for j in range(i+1, Npart):
+            Vir += calculate_pressure_for_chain_molecules(positions[i],positions[j])
     
     ### contribution of Ideal + Virial + Tail correction to pressure
   

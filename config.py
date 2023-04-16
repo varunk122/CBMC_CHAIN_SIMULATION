@@ -18,4 +18,4 @@ k_prop = 212 # KT/rad^2
 nsteps = 10  #total number of simulation steps
 
 project_name = "" #name of the project
-molecule_type = "propane" #name of molecule to simulate
+molecule_type = "ethane" #name of molecule to simulate

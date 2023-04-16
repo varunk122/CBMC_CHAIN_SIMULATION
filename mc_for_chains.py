@@ -36,16 +36,22 @@ def MC_step(positions, Npart):
 
 positions = init.init_system(box_length, Npart)
 energy = utility.total_energy(positions,box_length)
+pressure = utility.calculate_pressure(positions)
 energy_list = [energy]
 accepted_states_list = []
+pressure_list = [pressure]
 for i in range(nsteps):
     positions, energy_change = MC_step(positions,Npart)
     energy+= energy_change
+    pressure = utility.calculate_pressure(positions)
     energy_list.append(energy)
     accepted_states_list.append(accepted_states*100/(i+1))
-    print(f"Energy of the system at {i} step is {energy}")
+    pressure_list.append(pressure)
+    print(f"Energy and Pressure of the system at {i} step is {energy:.4f} and {pressure:.4f} respectively")
 
 np.save(f'{project_name}_{molecule_type}_energy.npy', np.array(energy_list, dtype=object), allow_pickle=True)
 np.save(f'{project_name}_{molecule_type}_ar_ratio.npy', np.array(accepted_states_list, dtype=object), allow_pickle=True)
+np.save(f'{project_name}_{molecule_type}_pressure.npy', np.array(pressure_list, dtype=object), allow_pickle=True)
+
 
 
