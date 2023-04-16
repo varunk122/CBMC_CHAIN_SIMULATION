@@ -111,11 +111,11 @@ def calculate_pressure_for_chain_molecules(mol_pos1, mol_pos2):
     return vir
 
 def calculate_pressure(positions):
-    frcut3 = 1/(rcut*rcut*rcut)
+    frcut3 = (sigma**3)/(rcut*rcut*rcut)
     Vir = 0
     Vol = box_length**3
     rho = Npart/Vol
-    Ptail = (16*3.14/3)*rho*rho*( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
+    Ptail = (16*3.14/3)*rho*rho*eps*sigma**3( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
     #print(Ptail)
     for i in range(Npart):                                                ### Loop over all Virial interactions
         for j in range(i+1, Npart):
@@ -123,7 +123,7 @@ def calculate_pressure(positions):
     
     ### contribution of Ideal + Virial + Tail correction to pressure
   
-    Pressure = rho * temp + Vir + Ptail
+    Pressure = rho  / beta + Vir + Ptail
                 
     return Pressure
 
