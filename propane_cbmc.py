@@ -17,6 +17,7 @@ def CBMC_step(positions, Npart):
     global accepted_steps
     idx = random.randint(0,Npart-1)
     #find rosenbluth factor for previous configuration
+    Uo = utility.energy_of_a_chain(idx, positions, box_length)
     prev_position = np.copy(positions[idx])
     Wo1 = k * np.exp(-beta * utility.energy_of_particle(idx,0,positions,box_length))
     Wo2 = np.exp(-beta * utility.energy_of_particle(idx,1,positions,box_length))
@@ -86,8 +87,9 @@ def CBMC_step(positions, Npart):
         #not accept
         positions[idx] = prev_position   
         print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move not accpeted !! ")
+        return positions, accepted_steps,0
     else :
         accepted_steps += 1
         print(f"Old Rosenbluth factor {Wo} New Rosenbluth factor {Wn}, Move accpeted !! ")
-
-    return positions, accepted_steps
+        Un = utility.energy_of_a_chain(idx, positions, box_length)
+        return positions, accepted_steps, Un - Uo

@@ -1,5 +1,5 @@
 #parameters
-rho = 0.01      #density of the system
+rho = 0.0075      #density of the system
 Npart = 108     #number of molecules
 box_length = (Npart / rho) ** (1/3)  #box length of the system
 bond_length = 1.5  #angstrom       #bond length of the system
@@ -15,7 +15,7 @@ rcut = 3*bond_length #only for calculating pressure
 theta_mean = 1.936 #radian
 k_prop = 212 # KT/rad^2 
 
-nsteps = 10  #total number of simulation steps
+nsteps = 10000  #total number of simulation steps
 
-project_name = "run1" #name of the project
+project_name = "cbmc1" #name of the project
 molecule_type = "propane" #name of molecule to simulate
