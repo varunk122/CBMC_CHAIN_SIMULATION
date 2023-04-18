@@ -17,12 +17,12 @@ pressure_list = [pressure]
 
 for i in range(nsteps):
     if molecule_type == 'ethane':
-        positions, accepted_states, energy_change = ethane_cbmc.CBMC_step(positions, Npart)
+        positions, accepted_states, energy_change, pressure_change = ethane_cbmc.CBMC_step(positions, Npart)
     elif  molecule_type == 'propane':
-        positions, accepted_states, energy_change = propane_cbmc.CBMC_step(positions, Npart)
+        positions, accepted_states, energy_change, pressure_change = propane_cbmc.CBMC_step(positions, Npart)
 
     energy += energy_change
-    pressure = utility.calculate_pressure(positions)
+    pressure += pressure_change
     energy_list.append(energy)
     pressure_list.append(pressure)
     ar_list.append(accepted_states*100/(i+1))

@@ -15,8 +15,11 @@ def MC_step(positions, Npart):
     
     idx = random.randint(0,Npart-1)
     Uo = utility.energy_of_a_chain(idx, positions, box_length)
+    Po = utility.virial_pressure_molecular(idx, positions)
     prev_position = np.copy(positions[idx])
-    if molecule_type == 'ethane':
+    if molecule_type == 'methane':
+        positions[idx] = init.generate_random_atom()
+    elif molecule_type == 'ethane':
         positions[idx] = init.generate_random_molecule(bond_length)
     elif molecule_type == 'propane':
         positions[idx] = init.generate_propane_molecule(bond_length)
@@ -26,11 +29,13 @@ def MC_step(positions, Npart):
     if random.random() < np.exp(-beta *(Un-Uo)):
         print(f"New state accepted")
         accepted_states += 1
-        return positions, Un-Uo
+        Pn = utility.virial_pressure_molecular(idx, positions)
+
+        return positions, Un-Uo, Pn-Po
     else :
         positions[idx] = prev_position
         print(f"Old state accepted")
-        return positions, 0
+        return positions, 0, 0
 
     
 
@@ -41,10 +46,10 @@ energy_list = [energy]
 accepted_states_list = []
 pressure_list = [pressure]
 for i in range(nsteps):
-    positions, energy_change = MC_step(positions,Npart)
+    positions, energy_change, pressure_change = MC_step(positions,Npart)
     # print(energy_change)
     energy+= energy_change
-    pressure = utility.calculate_pressure(positions)
+    pressure += pressure_change
     energy_list.append(energy)
     accepted_states_list.append(accepted_states*100/(i+1))
     pressure_list.append(pressure)

@@ -3,6 +3,10 @@ from utility import pbc,add_bond_optimal
 
 from config import *
 
+def generate_random_atom():
+    r = np.random.rand(3) * box_length
+    return [r]
+
 def generate_random_molecule(bond_length):
     r1 = np.zeros(3)
     r2 = np.random.rand(3)
@@ -50,7 +54,9 @@ def init_system(box_length, Npart):
         max_iter = 1000
         it = 0
         while it < max_iter:
-            if molecule_type == 'ethane':
+            if molecule_type == 'methane':
+                mol_pos = generate_random_atom()
+            elif molecule_type == 'ethane':
                 mol_pos = generate_random_molecule(bond_length)
             elif molecule_type == 'propane':
                 mol_pos = generate_propane_molecule(bond_length)

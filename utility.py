@@ -57,8 +57,8 @@ def energy_of_particle(idx1, idx2, positions,box_length):
             for atom_pos in positions[i]:
                 # r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
                 energy += lj_potential(positions[idx1][idx2], atom_pos, box_length)
-    if idx2 == 2:
-        energy += lj_potential(positions[idx1][0],positions[idx1][2],box_length)
+    # if idx2 == 2:
+        # energy += lj_potential(positions[idx1][0],positions[idx1][2],box_length)
     return energy
 
 def generate_random_unit_vector():
@@ -108,6 +108,13 @@ def calculate_pressure_for_chain_molecules(mol_pos1, mol_pos2):
     for ap1 in mol_pos1:
         for ap2 in mol_pos2:
             vir += calculate_pressure_for_monoatomic(ap1, ap2)
+    return vir
+
+def virial_pressure_molecular(idx, positions):
+    vir = 0
+    for i in range(Npart):
+        if i != idx:
+            vir += calculate_pressure_for_chain_molecules(positions[idx], positions[i])
     return vir
 
 def calculate_pressure(positions):
