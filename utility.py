@@ -193,14 +193,15 @@ def add_bond_with_torsion(mol_pos):
     
     c1 = np.cross(vij, vjk)
     while True:
-        vkl = generate_random_unit_vector() * bond_length
+        vkl = add_bond_optimal(mol_pos)
         c2 = np.cross(vjk, vkl)
         phi = np.arccos(np.dot(c1,c2)/ (np.linalg.norm(c1)*np.linalg.norm(c2)))
         #parameters for butane in KJ/mol
         utors = 2.95*(1+np.cos(phi)) - 0.566*(1-np.cos(2*phi)) + 6.576*(1+np.cos(3*phi))
 
         if random.random() < np.exp(-beta * utors):
-            return vkl + mol_pos[-1]
+            # print(phi)
+            return vkl 
         
 def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)
