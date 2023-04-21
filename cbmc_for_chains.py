@@ -1,5 +1,6 @@
 import ethane_cbmc
 import propane_cbmc
+import butane_cbmc
 import init
 import utility
 import numpy as np
@@ -9,7 +10,7 @@ from config import *
 
 positions  = init.init_system(box_length, Npart)
 energy = utility.total_energy(positions, box_length)
-pressure = utility.calculate_pressure(positions)
+pressure =  utility.calculate_pressure(positions) * (100/6.022) #converting into bar
 
 energy_list = [energy]
 ar_list = []
@@ -20,15 +21,18 @@ for i in range(nsteps):
         positions, accepted_states, energy_change, pressure_change = ethane_cbmc.CBMC_step(positions, Npart)
     elif  molecule_type == 'propane':
         positions, accepted_states, energy_change, pressure_change = propane_cbmc.CBMC_step(positions, Npart)
+    elif molecule_type == 'butane':
+        positions, accepted_states, energy_change, pressure_change = butane_cbmc.CBMC_step(positions, Npart)
 
     energy += energy_change
-    pressure += pressure_change
+    pressure += pressure_change*(100/6.022) #converting into bar
     energy_list.append(energy)
     pressure_list.append(pressure)
     ar_list.append(accepted_states*100/(i+1))
-    print(f"Energy and Pressure of the system at {i} step is {energy:.4f} and {pressure:.4f} respectively")
-    if i%1000 ==0:
-        np.save(f'{project_name}_{molecule_type}_energy_{i}.npy', np.array(energy_list, dtype=object), allow_pickle=True)
-        np.save(f'{project_name}_{molecule_type}_ar_ratio_{i}.npy', np.array(ar_list, dtype=object), allow_pickle=True)
-        np.save(f'{project_name}_{molecule_type}_pressure_{i}.npy', np.array(pressure_list, dtype=object), allow_pickle=True)
+    print(f"Energy and Pressure of the system at {i} step is {energy:.4f} and {(pressure):.4f} respectively")
+    
+    
+np.save(f'{project_name}_{molecule_type}_energy_{i}.npy', np.array(energy_list, dtype=object), allow_pickle=True)
+np.save(f'{project_name}_{molecule_type}_ar_ratio_{i}.npy', np.array(ar_list, dtype=object), allow_pickle=True)
+np.save(f'{project_name}_{molecule_type}_pressure_{i}.npy', np.array(pressure_list, dtype=object), allow_pickle=True)
 

@@ -1,5 +1,5 @@
 import numpy as np
-from utility import pbc,add_bond_optimal
+from utility import pbc,add_bond_optimal,add_bond_with_torsion
 
 from config import *
 
@@ -26,9 +26,15 @@ def generate_propane_molecule(bond_length):
     mol_pos.append(r3)
     return mol_pos
 
+def generate_butane_molecule(bond_length):
+    mol_pos = generate_propane_molecule(bond_length)
+    r4 = add_bond_with_torsion(mol_pos)
+    mol_pos.append(r4)
+    return mol_pos
+
 # def generate_random_propane_molecule(bond_length)
 def check_overlap(mol_pos, positions):
-    threshold  = 2
+    threshold  = bond_length*1.5
     for position in positions:
         for atom_pos in position:
             # print(np.linalg.norm(atom_pos - mol_pos[0]))
@@ -60,6 +66,8 @@ def init_system(box_length, Npart):
                 mol_pos = generate_random_molecule(bond_length)
             elif molecule_type == 'propane':
                 mol_pos = generate_propane_molecule(bond_length)
+            elif molecule_type == 'butane':
+                mol_pos = generate_butane_molecule(bond_length)
             else :
                 print("Error: Unknown molcule_type in config file ")
                 quit()

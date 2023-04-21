@@ -17,20 +17,24 @@ def pbc(dx, L):
     
     return dx
 
-def lj_potential(atom_pos1, atom_pos2,box_length):
+def lj_potential(atom_pos1, atom_pos2,box_length,i,j):
     dx, dy, dz  = atom_pos1 - atom_pos2
     dx, dy, dz = pbc(dx,box_length) , pbc(dy,box_length) , pbc(dz,box_length)
     r = dx*dx + dy*dy + dz * dz
     # print(r)
     #print(np.sqrt(r))
-    fr6 = np.power(sigma**2 / r,3)
-    return 4*eps*(fr6*(fr6-1))
+    fr6 = np.power(sigma[i][j]**2 / r,3)
+    return 4*eps[i][j]*(fr6*(fr6-1))
 
 def find_potential_between_alkanes(mol_pos1, mol_pos2,box_length):
     energy = 0
+    i = 0
     for atom_pos_1 in mol_pos1:
+        j = 0
         for atom_pos_2 in mol_pos2:
-            energy += lj_potential(atom_pos_1, atom_pos_2,box_length)
+            energy += lj_potential(atom_pos_1, atom_pos_2,box_length,i,j)
+            j = j+1
+        i = i + 1
     
     return energy
 
@@ -53,10 +57,12 @@ def energy_of_a_chain(idx, positions, box_length):
 def energy_of_particle(idx1, idx2, positions,box_length):
     energy = 0
     for i in range(len(positions)):
+        j = 0
         if i != idx1:
             for atom_pos in positions[i]:
                 # r =  np.linalg.norm(positions[idx1][idx2] - atom_pos)
-                energy += lj_potential(positions[idx1][idx2], atom_pos, box_length)
+                energy += lj_potential(positions[idx1][idx2], atom_pos, box_length,idx2,j)
+                j+=1
     # if idx2 == 2:
         # energy += lj_potential(positions[idx1][0],positions[idx1][2],box_length)
     return energy
@@ -84,7 +90,7 @@ def check(positions, bond_length):
     
     return True
 
-def calculate_pressure_for_monoatomic(atom_pos1, atom_pos2):
+def calculate_pressure_for_monoatomic(atom_pos1, atom_pos2,i,j):
     Vol = box_length**3
 
     dx = atom_pos1[0] - atom_pos2[0] 
@@ -96,18 +102,22 @@ def calculate_pressure_for_monoatomic(atom_pos1, atom_pos2):
     r2 = xpbc*xpbc + ypbc*ypbc + zpbc*zpbc
     
     if r2 < rcut*rcut:                                              ### Calculating energy for particles inside cutoff distance
-        fr2 = (sigma*sigma)/r2
+        fr2 = (sigma[i][j]*sigma[i][j])/r2
         fr6 = fr2*fr2*fr2
         
-        return 48*eps*((fr6*(fr6 - 0.5))) /(3*Vol)
+        return 48*eps[i][j]*((fr6*(fr6 - 0.5))) /(3*Vol)
     
     return 0
 
 def calculate_pressure_for_chain_molecules(mol_pos1, mol_pos2):
     vir = 0
+    i = 0
     for ap1 in mol_pos1:
+        j = 0
         for ap2 in mol_pos2:
-            vir += calculate_pressure_for_monoatomic(ap1, ap2)
+            vir += calculate_pressure_for_monoatomic(ap1, ap2,i,j)
+            j += 1
+        i += 1
     return vir
 
 def virial_pressure_molecular(idx, positions):
@@ -118,25 +128,23 @@ def virial_pressure_molecular(idx, positions):
     return vir
 
 def calculate_pressure(positions):
-    frcut3 = (sigma**3)/(rcut*rcut*rcut)
+    frcut3 = (sigma[0][0]**3)/(rcut*rcut*rcut)
     Vir = 0
     Vol = box_length**3
     rho = Npart/Vol
-    Ptail = (16*3.14/3)*rho*rho*eps*(sigma**3)*( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
+    Ptail = (16*3.14/3)*rho*rho*eps[0][0]*(sigma[0][0]**3)*( (2*frcut3*frcut3*frcut3/3) - frcut3)      ### Tail correction to Pressure (Refer Frenkel and Smit for expression)
     #print(Ptail)
     for i in range(Npart):                                                ### Loop over all Virial interactions
         for j in range(i+1, Npart):
             Vir += calculate_pressure_for_chain_molecules(positions[i],positions[j])
     
     ### contribution of Ideal + Virial + Tail correction to pressure
-  
-    Pressure = rho  / beta + Vir + Ptail
-                
+    Pressure = (rho  / beta + Vir + Ptail)                
     return Pressure
 
 
 
-def add_bond(mol_pos, beta = 1):
+def add_bond(mol_pos):
     r = mol_pos[-2] - mol_pos[-1]
     r = r / np.linalg.norm(r)
     flag = False
@@ -156,7 +164,7 @@ def add_bond(mol_pos, beta = 1):
 def convert_to_unit_vector(vector):
     return vector / np.linalg.norm(vector)
 
-def add_bond_optimal(mol_pos, beta = 1):
+def add_bond_optimal(mol_pos):
     z = mol_pos[-2] - mol_pos[-1]
     y = np.array([0,1,0]) 
     if z[1] != 0:
@@ -179,7 +187,21 @@ def add_bond_optimal(mol_pos, beta = 1):
 
     return mol_pos[-1] + (r*np.sin(theta)*np.cos(phi))*x + (r*np.sin(theta)*np.sin(phi))*y + (r*np.cos(theta))*z
 
+def add_bond_with_torsion(mol_pos):
+    vjk = mol_pos[-1] - mol_pos[-2]
+    vij = mol_pos[-2] - mol_pos[-3]
+    
+    c1 = np.cross(vij, vjk)
+    while True:
+        vkl = generate_random_unit_vector() * bond_length
+        c2 = np.cross(vjk, vkl)
+        phi = np.arccos(np.dot(c1,c2)/ (np.linalg.norm(c1)*np.linalg.norm(c2)))
+        #parameters for butane in KJ/mol
+        utors = 2.95*(1+np.cos(phi)) - 0.566*(1-np.cos(2*phi)) + 6.576*(1+np.cos(3*phi))
 
+        if random.random() < np.exp(-beta * utors):
+            return vkl + mol_pos[-1]
+        
 def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)
     positions = []

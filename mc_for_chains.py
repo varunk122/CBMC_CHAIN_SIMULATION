@@ -23,6 +23,8 @@ def MC_step(positions, Npart):
         positions[idx] = init.generate_random_molecule(bond_length)
     elif molecule_type == 'propane':
         positions[idx] = init.generate_propane_molecule(bond_length)
+    elif molecule_type == 'butane':
+        positions[idx] = init.generate_butane_molecule(bond_length)
 
     Un = utility.energy_of_a_chain(idx,positions,box_length)
     
@@ -31,17 +33,15 @@ def MC_step(positions, Npart):
         accepted_states += 1
         Pn = utility.virial_pressure_molecular(idx, positions)
 
-        return positions, Un-Uo, Pn-Po
+        return positions, Un-Uo, Pn - Po
     else :
         positions[idx] = prev_position
         print(f"Old state accepted")
         return positions, 0, 0
 
-    
-
 positions = init.init_system(box_length, Npart)
 energy = utility.total_energy(positions,box_length)
-pressure = utility.calculate_pressure(positions)
+pressure = utility.calculate_pressure(positions) *(100/6.022) #converting into bar
 energy_list = [energy]
 accepted_states_list = []
 pressure_list = [pressure]
@@ -49,7 +49,7 @@ for i in range(nsteps):
     positions, energy_change, pressure_change = MC_step(positions,Npart)
     # print(energy_change)
     energy+= energy_change
-    pressure += pressure_change
+    pressure += pressure_change * (100/6.022) #converting into bar
     energy_list.append(energy)
     accepted_states_list.append(accepted_states*100/(i+1))
     pressure_list.append(pressure)
