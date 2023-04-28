@@ -22,11 +22,11 @@ Example Command -
 
 -  For MC
 
-`chainmc - c . - l .  -t mc`
+`chainmc - c ./config.py - l .  -t mc`
 
 - For CBMC 
 
-`chainmc - c . - l .  -t mc`
+`chainmc - c ./config.py - l .  -t mc`
 
 # Run the code without shell script 
 
