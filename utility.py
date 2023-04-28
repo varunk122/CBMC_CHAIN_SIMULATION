@@ -193,7 +193,8 @@ def add_bond_with_torsion(mol_pos):
     
     c1 = np.cross(vij, vjk)
     while True:
-        vkl = add_bond_optimal(mol_pos)
+        r4 = add_bond_optimal(mol_pos)
+        vkl = r4 - mol_pos[-1]
         c2 = np.cross(vjk, vkl)
         phi = np.arccos(np.dot(c1,c2)/ (np.linalg.norm(c1)*np.linalg.norm(c2)))
         #parameters for butane in KJ/mol
@@ -201,8 +202,37 @@ def add_bond_with_torsion(mol_pos):
 
         if random.random() < np.exp(-beta * utors):
             # print(phi)
-            return vkl 
+            return r4
         
+def add_bond_with_torsion_optimally(mol_pos):
+    vjk = mol_pos[-1] - mol_pos[-2]
+    vij = mol_pos[-2] - mol_pos[-3]
+
+    c1 = np.cross(vij, vjk)
+    c2 = np.cross(c1,vjk)
+    
+    c1_ = convert_to_unit_vector(c1)
+    c2_ = convert_to_unit_vector(c2)
+    c3 = convert_to_unit_vector(vjk)
+
+    phi = 0
+    while True:
+        r4 = add_bond_optimal(mol_pos)
+        vkl = r4 - mol_pos[-1]
+        c2 = np.cross(vjk, vkl)
+        phi = np.arccos(np.dot(c1,c2)/ (np.linalg.norm(c1)*np.linalg.norm(c2)))
+        #parameters for butane in KJ/mol
+        utors = 2.95*(1+np.cos(phi)) - 0.566*(1-np.cos(2*phi)) + 6.576*(1+np.cos(3*phi))
+
+        if random.random() < np.exp(-beta * utors):
+            print(phi)
+            v1 = mol_pos[-1]+ bond_length*np.sin(theta_mean)*(np.cos(phi)*c2_ + np.sin(phi)*c1_) + bond_length*np.cos(theta_mean)*c3
+            v2 = mol_pos[-1]+ bond_length*np.sin(theta_mean)*(np.cos(phi)*c2_ - np.sin(phi)*c1_) + bond_length*np.cos(theta_mean)*c3
+            print(v1,v2, r4)
+            return r4 
+        
+    vkl = bond_length*np.sin(theta_mean)*(np.cos(phi)*c2 + np.sin(phi)*c1) + bond_length*np.cos(theta_mean)*c3
+
 def read_positions_from_file(file_name):
     np_positions = np.load(file_name, allow_pickle=True)
     positions = []

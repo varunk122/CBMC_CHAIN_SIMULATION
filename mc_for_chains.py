@@ -54,10 +54,11 @@ for i in range(nsteps):
     accepted_states_list.append(accepted_states*100/(i+1))
     pressure_list.append(pressure)
     print(f"Energy and Pressure of the system at {i} step is {energy} and {pressure} respectively")
+    if(i+1)%10000 == 0:
 
-np.save(f'{project_name}_{molecule_type}_energy.npy', np.array(energy_list, dtype=object), allow_pickle=True)
-np.save(f'{project_name}_{molecule_type}_ar_ratio.npy', np.array(accepted_states_list, dtype=object), allow_pickle=True)
-np.save(f'{project_name}_{molecule_type}_pressure.npy', np.array(pressure_list, dtype=object), allow_pickle=True)
+        np.save(f'{project_name}_{molecule_type}_energy_{i}.npy', np.array(energy_list, dtype=object), allow_pickle=True)
+        np.save(f'{project_name}_{molecule_type}_ar_ratio_{i}.npy', np.array(accepted_states_list, dtype=object), allow_pickle=True)
+        np.save(f'{project_name}_{molecule_type}_pressure_{i}.npy', np.array(pressure_list, dtype=object), allow_pickle=True)
 
 
 

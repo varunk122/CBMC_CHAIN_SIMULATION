@@ -1,5 +1,5 @@
 import numpy as np
-from utility import pbc,add_bond_optimal,add_bond_with_torsion
+from utility import pbc,add_bond_optimal,add_bond_with_torsion,add_bond_with_torsion_optimally
 
 from config import *
 
